@@ -56,14 +56,25 @@ public class SCKRealTimeAudioRecorder: SCKAudioSessionManager {
     private var cachedFileURL: URL?
 
     private var audioSettings: [String: Any] {
-        [
-            AVFormatIDKey: Int(recordingDetails.format.audioFormatID),
-            AVLinearPCMIsNonInterleaved: false,
-            AVSampleRateKey: sampleRate,
-            AVNumberOfChannelsKey: isStereoSupported ? 2 : 1,
-            AVLinearPCMBitDepthKey: 16,
-            AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue
-        ]
+        switch recordingDetails.format {
+        case .aac:
+            [
+                AVFormatIDKey: Int(recordingDetails.format.audioFormatID),
+                AVSampleRateKey: sampleRate,
+                AVNumberOfChannelsKey: isStereoSupported ? 2 : 1,
+                AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue,
+                AVEncoderBitRateKey: 96000
+            ]
+        default:
+            [
+                AVFormatIDKey: Int(recordingDetails.format.audioFormatID),
+                AVLinearPCMIsNonInterleaved: false,
+                AVSampleRateKey: sampleRate,
+                AVNumberOfChannelsKey: isStereoSupported ? 2 : 1,
+                AVLinearPCMBitDepthKey: 16,
+                AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue
+            ]
+        }
     }
 
     private var fileURL: URL {
