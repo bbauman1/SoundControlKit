@@ -316,18 +316,30 @@ extension SCKRealTimeAudioRecorder {
     /// Sets up the audio file for writing recorded audio data.
     ///
     /// - Throws: If the file setup fails.
-    private func setupAudio() throws {
-        audioFile = try AVAudioFile(forWriting: fileURL, settings: audioSettings)
+    private func setupAudio(settings: [String: Any]) throws {
+        audioFile = try AVAudioFile(forWriting: fileURL, settings: settings)
     }
 
     /// Installs a tap on the input node to capture real-time audio buffers during recording.
     private func setupRealTimeAudioOutput() throws {
         guard engine.isRunning else { return }
 
-        // Initialize audio file.
-        try setupAudio()
         // Get input format.
         let inputFormat = inputNode.outputFormat(forBus: 0)
+        guard let audioFormat = AVAudioFormat(
+            settings: [
+                AVFormatIDKey: kAudioFormatMPEG4AAC,
+                AVSampleRateKey: inputFormat.sampleRate,
+                AVNumberOfChannelsKey: inputFormat.channelCount,
+                AVEncoderBitRateKey: 96000
+            ]
+        ) else {
+            throw NSError(domain: "Audio Settings", code: 0)
+        }
+
+        // Initialize audio file.
+        try setupAudio(settings: audioFormat.settings)
+
         // Ensure that the engine is running before installing the tap
         inputNode.installTap(
             onBus: 0,
