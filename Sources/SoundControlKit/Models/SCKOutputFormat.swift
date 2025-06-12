@@ -30,7 +30,7 @@ public enum SCKOutputFormat: Sendable, CaseIterable {
 
     public var fileExtension: String {
         switch self {
-        case .aac: "aac"
+        case .aac: "m4a"
         case .m4a: "m4a"
         case .wav: "wav"
         case .flac: "flac"
